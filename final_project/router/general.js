@@ -53,7 +53,7 @@ function getByISBN(isbn) {
         }
     })
 }
- public_users.get('/isbn/:isbn', function (req, res) {
+public_users.get('/isbn/:isbn', function (req, res) {
     getByISBN(req.params.isbn)
     .then(
         result => res.send(result),
