@@ -34,7 +34,6 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  // res.send(JSON.stringify(books));
   let bookspromise=new Promise((resolve,reject)=> {
     resolve(books);
   });
@@ -44,29 +43,26 @@ public_users.get('/',function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  // const isbn =req.params.isbn;
-  // res.send(books[isbn]);
-  let isbnPromise = new Promise((resove,reject)=>{
-    const isbn = req.params.isbn;
-  });
-  isbnPromise.then((result)=>{
-    res.send(result);
-  })
- });
+function getByISBN(isbn) {
+    return new Promise((resolve, reject) => {
+        let isbnNum = parseInt(isbn);
+        if (books[isbnNum]) {
+            resolve(books[isbnNum]);
+        } else {
+            reject({status:404, message:`ISBN ${isbn} not found`});
+        }
+    })
+}
+ public_users.get('/isbn/:isbn', function (req, res) {
+    getByISBN(req.params.isbn)
+    .then(
+        result => res.send(result),
+        error => res.status(error.status).json({message: error.message})
+    );
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  // const author = req.params.author;
-  // let bookauthor=[];
-  // for (let i =0 ; i < Object.values(books).length; i++)
-  // {
-  //   if (author === Object.values(books)[i].author)
-  //   {
-  //     bookauthor.push(Object.values(books)[i]);
-  //   }
-  // }
-  // res.send(bookauthor);
   let authorpromise = new Promise ((resolve,reject)=> {
     const author = req.params.author;
     let booksauthor = [];
@@ -74,7 +70,7 @@ public_users.get('/author/:author',function (req, res) {
     {
       if (author === Object.values(books)[i].author)
       {
-        bookauthor.push(Object.values(books)[i]);
+        booksauthor.push(Object.values(books)[i]);
       } 
     }
     resolve (booksauthor);
@@ -92,16 +88,6 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  // const title = req.params.title;
-  // let booktitle=[];
-  // for (let i =0 ; i < Object.values(books).length; i++)
-  // {
-  //   if (title === Object.values(books)[i].title)
-  //   {
-  //     booktitle.push(Object.values(books)[i]);
-  //   }
-  // }
-  // res.send(booktitle);
   let titlepromise = new Promise((resolve, reject) => {
     const title = req.params.title;
     let booktitle=[];
